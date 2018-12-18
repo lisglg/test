@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.damo.sms.dao.SmsCaptchaDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.damo.sms.entity.SmsCaptchaEntity" id="smsCaptchaMap">
+        <result property="id" column="id"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="mobile" column="mobile"/>
+        <result property="code" column="code"/>
+        <result property="status" column="status"/>
+        <result property="lasttime" column="lastTime"/>
+        <result property="type" column="type"/>
+    </resultMap>
+
+    <select id="getCntByCaptchaAndMobile" resultType="int" parameterType="string">
+        SELECT count(1) as cnt from tb_sms_captcha where mobile = #{mobile} and code = #{code} and status = '0' and lastTime > (CURRENT_TIMESTAMP - INTERVAL 2 MINUTE)
+    </select>
+
+    <insert id="addSmsCaptcha" parameterType="io.damo.sms.entity.SmsCaptchaEntity">
+        INSERT INTO tb_sms_captcha(id, area_code, mobile, code, status, lastTime, type) VALUES (#{id}, #{areaCode},#{mobile}, #{code}, '0', NOW(), #{type})
+    </insert>
+
+    <update id="updateSmsCaptcha" parameterType="io.damo.sms.entity.SmsCaptchaEntity">
+        UPDATE tb_sms_captcha SET code = #{code}, area_code = #{areaCode}, status = '0', lastTime = NOW() WHERE mobile = #{mobile} AND type = #{type}
+    </update>
+
+    <update id="updateSmsCaptchaDisable" parameterType="string">
+        UPDATE tb_sms_captcha SET status = '1' where mobile = #{mobile} and status = '0'
+    </update>
+
+    <select id="getAvailableCaptchaCntByMobile" parameterType="string" resultType="int">
+        SELECT
+        count(1) AS cnt
+        FROM
+        tb_sms_captcha
+        WHERE
+        mobile = #{mobile}
+        AND STATUS = '0'
+        AND lastTime > (
+        CURRENT_TIMESTAMP - INTERVAL 1 MINUTE
+        )
+    </select>
+
+    <select id="getCntByCaptcha" resultType="int" parameterType="string">
+        SELECT count(1) as cnt from tb_sms_captcha where area_code = #{areaCode} and mobile = #{mobile} and code = #{code} and status = '0' and lastTime > (CURRENT_TIMESTAMP - INTERVAL 5 MINUTE)
+    </select>
+
+    <select id="querySmsCaptcha" resultType="io.damo.sms.entity.SmsCaptchaEntity">
+        select * from tb_sms_captcha where mobile=#{mobile} order by lastTime desc limit 1
+    </select>
+
+</mapper>

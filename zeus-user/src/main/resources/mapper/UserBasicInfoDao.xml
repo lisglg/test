@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.damo.user.dao.UserBasicInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.damo.user.entity.UserBasicInfoEntity" id="userBasicInfoMap">
+        <result property="id" column="id"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="phone" column="phone"/>
+        <result property="password" column="password"/>
+        <result property="recommenderPhone" column="recommender_phone"/>
+        <result property="indirectRecommend" column="indirect_recommend"/>
+        <result property="qrCode" column="qr_code"/>
+        <result property="valletUrl" column="vallet_url"/>
+        <result property="headImage" column="head_image"/>
+        <result property="payPassword" column="pay_password"/>
+        <result property="state" column="state"/>
+        <result property="errorNumber" column="error_number"/>
+        <result property="accountKey" column="account_key"/>
+        <result property="noticeMark" column="notice_mark"/>
+        <result property="disableReason" column="disable_reason"/>
+        <result property="disableTime" column="disable_time"/>
+        <result property="enableReason" column="enable_reason"/>
+        <result property="enableTime" column="enable_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+
+</mapper>

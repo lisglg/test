@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.damo.sms.dao.NationalCodeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.damo.sms.entity.NationalCodeEntity" id="nationalCodeMap">
+        <result property="id" column="id"/>
+        <result property="nationalName" column="national_name"/>
+        <result property="chineseName" column="chinese_name"/>
+        <result property="abbre" column="abbre"/>
+        <result property="code" column="code"/>
+        <result property="land" column="land"/>
+        <result property="price" column="price"/>
+    </resultMap>
+
+    <select id="getAll" resultType="io.damo.sms.entity.NationalCodeEntity" >
+        SELECT * FROM tb_national_code
+    </select>
+
+</mapper>
