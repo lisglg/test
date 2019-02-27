@@ -2,7 +2,6 @@ package io.damo.user.entity;
 
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
-import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,7 +10,7 @@ import java.util.Date;
  * app版本升级配置表
  * 
  * @author ives
- * @date 2018-05-05 10:20:44
+ * @date 2019-02-20 16:03:32
  */
 @TableName("app_promotion_record")
 public class AppPromotionRecordEntity implements Serializable {
@@ -23,45 +22,29 @@ public class AppPromotionRecordEntity implements Serializable {
 	@TableId
 	private Integer id;
 	/**
+	 * 是否强制更新(0.不强制  1.强制)
+	 */
+	private Integer forceUpdate;
+	/**
 	 * 版本号
 	 */
-	@ApiModelProperty("版本号")
 	private String version;
 	/**
 	 * 类型（1.andriod、2.ios）
 	 */
-	@ApiModelProperty("类型（1.andriod、2.ios）")
 	private Integer type;
 	/**
 	 * 安装包路径
 	 */
-	@ApiModelProperty("安装包路径")
 	private String url;
 	/**
-	 * 创建时间
+	 * 
 	 */
-	@ApiModelProperty("创建时间")
 	private Date createTime;
-
-	/**
-	 * 是否强制更新(0.否、1.是)
-	 */
-	@ApiModelProperty("是否强制更新(0.否、1.是)")
-	private Integer forceUpdate;
-
 	/**
 	 * 版本名
 	 */
-	@ApiModelProperty("版本名")
 	private String name;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	/**
 	 * 设置：主健ID
@@ -74,6 +57,18 @@ public class AppPromotionRecordEntity implements Serializable {
 	 */
 	public Integer getId() {
 		return id;
+	}
+	/**
+	 * 设置：是否强制更新(0.不强制  1.强制)
+	 */
+	public void setForceUpdate(Integer forceUpdate) {
+		this.forceUpdate = forceUpdate;
+	}
+	/**
+	 * 获取：是否强制更新(0.不强制  1.强制)
+	 */
+	public Integer getForceUpdate() {
+		return forceUpdate;
 	}
 	/**
 	 * 设置：版本号
@@ -123,12 +118,16 @@ public class AppPromotionRecordEntity implements Serializable {
 	public Date getCreateTime() {
 		return createTime;
 	}
-
-	public Integer getForceUpdate() {
-		return forceUpdate;
+	/**
+	 * 设置：版本名
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
-
-	public void setForceUpdate(Integer forceUpdate) {
-		this.forceUpdate = forceUpdate;
+	/**
+	 * 获取：版本名
+	 */
+	public String getName() {
+		return name;
 	}
 }

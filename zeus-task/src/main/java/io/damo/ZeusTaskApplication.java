@@ -7,8 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
-@EnableScheduling
-@EnableTransactionManagement
+@EnableTransactionManagement(proxyTargetClass = true)
 @MapperScan(basePackages = {"io.damo.*.dao"})
 public class ZeusTaskApplication {
 

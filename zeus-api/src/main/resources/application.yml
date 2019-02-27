@@ -71,4 +71,6 @@ mybatis-plus:
 
 #logging
 logging:
-  level.root: info
+#  level.root: info
+#  path: logs/newPay-api/spring
+  config: classpath:logback-spring.xml

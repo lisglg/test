@@ -20,12 +20,12 @@ public class TokenServiceImpl extends ServiceImpl<TokenDao, TokenEntity> impleme
     private final static int EXPIRE = 3600 * 12;
 
     @Override
-    public TokenEntity queryByToken(String token,Long tokenType) {
+    public TokenEntity queryByToken(String token, Long tokenType) {
         return this.selectOne(new EntityWrapper<TokenEntity>().eq("token", token).eq("token_type", tokenType));
     }
 
     @Override
-    public TokenEntity createToken(String userId,Long tokenType) {
+    public TokenEntity createToken(String userId, Long tokenType) {
         //当前时间
         Date now = new Date();
         //过期时间

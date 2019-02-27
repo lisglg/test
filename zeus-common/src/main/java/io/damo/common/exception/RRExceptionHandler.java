@@ -1,6 +1,7 @@
 package io.damo.common.exception;
 
 import io.damo.common.utils.R;
+import org.apache.catalina.connector.ClientAbortException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,10 @@ public class RRExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public R handleException(Exception e){
+		if(e instanceof ClientAbortException){
+			logger.info("客户端关闭，响应丢弃");
+			return null;
+		}
 		logger.error(e.getMessage(), e);
 		return R.error();
 	}

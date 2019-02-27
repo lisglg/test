@@ -11,7 +11,7 @@ import java.util.Date;
  * 用户基本信息表
  * 
  * @author ives
- * @date 2018-09-06 16:39:11
+ * @date 2019-02-20 16:46:38
  */
 @TableName("user_basic_info")
 public class UserBasicInfoEntity implements Serializable {
@@ -22,11 +22,14 @@ public class UserBasicInfoEntity implements Serializable {
 	 */
 	@TableId(type= IdType.INPUT)
 	private String id;
-
 	/**
 	 * 昵称
 	 */
 	private String nickName;
+	/**
+	 * 手机区号
+	 */
+	private String code;
 	/**
 	 * 手机号
 	 */
@@ -36,45 +39,43 @@ public class UserBasicInfoEntity implements Serializable {
 	 */
 	private String password;
 	/**
-	 * 推荐人手机号
+	 * 推荐人ID
 	 */
-	private String recommenderPhone;
+	private String recommenderId;
 	/**
-	 * 间接推荐人
+	 * 间接推荐人ID
 	 */
-	private String indirectRecommend;
-	/**
-	 * 二维码
-	 */
-	private String qrCode;
-	/**
-	 * 钱包地址
-	 */
-	private String valletUrl;
-	/**
-	 * 头像
-	 */
-	private String headImage;
+	private String indirectId;
 	/**
 	 * 支付密码
 	 */
 	private String payPassword;
 	/**
-	 * 用户状态(0.正常  1.禁用)
+	 * 用户状态(0:启用,1:禁用)
 	 */
 	private Integer state;
+	/**
+	 * 注册时间
+	 */
+	private Date registerTime;
+	/**
+	 * 创建时间
+	 */
+	private Date createTime;
+	/**
+	 * 更新时间
+	 */
+	private Date updateTime;
 	/**
 	 * 登录错误次数
 	 */
 	private Integer errorNumber;
-
 	/**
-	 * 切换账号秘钥
+	 * 切换账号密钥
 	 */
 	private String accountKey;
-
 	/**
-	 * 是否查看最新公告(0.未查看  1.已查看)
+	 * 是否查看最新公告(0.未提示  1.已提示)
 	 */
 	private Integer noticeMark;
 	/**
@@ -86,21 +87,13 @@ public class UserBasicInfoEntity implements Serializable {
 	 */
 	private Date disableTime;
 	/**
-	 * 启用原因
+	 * 启用理由
 	 */
 	private String enableReason;
 	/**
 	 * 启用时间
 	 */
 	private Date enableTime;
-	/**
-	 * 更新时间
-	 */
-	private Date updateTime;
-	/**
-	 * 创建时间
-	 */
-	private Date createTime;
 
 	/**
 	 * 设置：主健ID
@@ -127,6 +120,18 @@ public class UserBasicInfoEntity implements Serializable {
 		return nickName;
 	}
 	/**
+	 * 设置：手机区号
+	 */
+	public void setCode(String code) {
+		this.code = code;
+	}
+	/**
+	 * 获取：手机区号
+	 */
+	public String getCode() {
+		return code;
+	}
+	/**
 	 * 设置：手机号
 	 */
 	public void setPhone(String phone) {
@@ -151,64 +156,28 @@ public class UserBasicInfoEntity implements Serializable {
 		return password;
 	}
 	/**
-	 * 设置：推荐人手机号
+	 * 设置：推荐人ID
 	 */
-	public void setRecommenderPhone(String recommenderPhone) {
-		this.recommenderPhone = recommenderPhone;
+	public void setRecommenderId(String recommenderId) {
+		this.recommenderId = recommenderId;
 	}
 	/**
-	 * 获取：推荐人手机号
+	 * 获取：推荐人ID
 	 */
-	public String getRecommenderPhone() {
-		return recommenderPhone;
+	public String getRecommenderId() {
+		return recommenderId;
 	}
 	/**
-	 * 设置：间接推荐人
+	 * 设置：间接推荐人ID
 	 */
-	public void setIndirectRecommend(String indirectRecommend) {
-		this.indirectRecommend = indirectRecommend;
+	public void setIndirectId(String indirectId) {
+		this.indirectId = indirectId;
 	}
 	/**
-	 * 获取：间接推荐人
+	 * 获取：间接推荐人ID
 	 */
-	public String getIndirectRecommend() {
-		return indirectRecommend;
-	}
-	/**
-	 * 设置：二维码
-	 */
-	public void setQrCode(String qrCode) {
-		this.qrCode = qrCode;
-	}
-	/**
-	 * 获取：二维码
-	 */
-	public String getQrCode() {
-		return qrCode;
-	}
-	/**
-	 * 设置：钱包地址
-	 */
-	public void setValletUrl(String valletUrl) {
-		this.valletUrl = valletUrl;
-	}
-	/**
-	 * 获取：钱包地址
-	 */
-	public String getValletUrl() {
-		return valletUrl;
-	}
-	/**
-	 * 设置：头像
-	 */
-	public void setHeadImage(String headImage) {
-		this.headImage = headImage;
-	}
-	/**
-	 * 获取：头像
-	 */
-	public String getHeadImage() {
-		return headImage;
+	public String getIndirectId() {
+		return indirectId;
 	}
 	/**
 	 * 设置：支付密码
@@ -223,16 +192,52 @@ public class UserBasicInfoEntity implements Serializable {
 		return payPassword;
 	}
 	/**
-	 * 设置：用户状态(0.正常  1.禁用)
+	 * 设置：用户状态(0:启用,1:禁用)
 	 */
 	public void setState(Integer state) {
 		this.state = state;
 	}
 	/**
-	 * 获取：用户状态(0.正常  1.禁用)
+	 * 获取：用户状态(0:启用,1:禁用)
 	 */
 	public Integer getState() {
 		return state;
+	}
+	/**
+	 * 设置：注册时间
+	 */
+	public void setRegisterTime(Date registerTime) {
+		this.registerTime = registerTime;
+	}
+	/**
+	 * 获取：注册时间
+	 */
+	public Date getRegisterTime() {
+		return registerTime;
+	}
+	/**
+	 * 设置：创建时间
+	 */
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	/**
+	 * 获取：创建时间
+	 */
+	public Date getCreateTime() {
+		return createTime;
+	}
+	/**
+	 * 设置：更新时间
+	 */
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+	/**
+	 * 获取：更新时间
+	 */
+	public Date getUpdateTime() {
+		return updateTime;
 	}
 	/**
 	 * 设置：登录错误次数
@@ -247,13 +252,25 @@ public class UserBasicInfoEntity implements Serializable {
 		return errorNumber;
 	}
 	/**
-	 * 设置：是否查看最新公告(0.未查看  1.已查看)
+	 * 设置：切换账号密钥
+	 */
+	public void setAccountKey(String accountKey) {
+		this.accountKey = accountKey;
+	}
+	/**
+	 * 获取：切换账号密钥
+	 */
+	public String getAccountKey() {
+		return accountKey;
+	}
+	/**
+	 * 设置：是否查看最新公告(0.未提示  1.已提示)
 	 */
 	public void setNoticeMark(Integer noticeMark) {
 		this.noticeMark = noticeMark;
 	}
 	/**
-	 * 获取：是否查看最新公告(0.未查看  1.已查看)
+	 * 获取：是否查看最新公告(0.未提示  1.已提示)
 	 */
 	public Integer getNoticeMark() {
 		return noticeMark;
@@ -283,13 +300,13 @@ public class UserBasicInfoEntity implements Serializable {
 		return disableTime;
 	}
 	/**
-	 * 设置：启用原因
+	 * 设置：启用理由
 	 */
 	public void setEnableReason(String enableReason) {
 		this.enableReason = enableReason;
 	}
 	/**
-	 * 获取：启用原因
+	 * 获取：启用理由
 	 */
 	public String getEnableReason() {
 		return enableReason;
@@ -305,37 +322,5 @@ public class UserBasicInfoEntity implements Serializable {
 	 */
 	public Date getEnableTime() {
 		return enableTime;
-	}
-	/**
-	 * 设置：更新时间
-	 */
-	public void setUpdateTime(Date updateTime) {
-		this.updateTime = updateTime;
-	}
-	/**
-	 * 获取：更新时间
-	 */
-	public Date getUpdateTime() {
-		return updateTime;
-	}
-	/**
-	 * 设置：创建时间
-	 */
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-	/**
-	 * 获取：创建时间
-	 */
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-	public String getAccountKey() {
-		return accountKey;
-	}
-
-	public void setAccountKey(String accountKey) {
-		this.accountKey = accountKey;
 	}
 }

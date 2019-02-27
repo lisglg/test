@@ -20,10 +20,15 @@
         <!-- 功能模块 -->
         <module>zeus-sms</module>   <!-- 短信模块 -->
         <module>zeus-user</module>  <!-- 用户模块 -->
+        <!--    <module>zeus-finance</module> 充值提现模块 -->
+        <!--    <module>zeus-benefit</module> -->
         <!-- 可运行的spring boot 模块 -->
         <module>zeus-api</module>  <!-- 移动端APP接口 -->
+        <module>zeus-web</module>  <!-- Web网页端接口 -->
         <module>zeus-task</module>  <!-- 定时任务 -->
         <module>zeus-rongyun</module>
+        <module>zeus-wallet</module>
+        <module>zeus-mall-sdk</module>
     </modules>
 
     <properties>
@@ -37,10 +42,11 @@
         <mybatisplus.version>2.1.6</mybatisplus.version>
         <mybatisplus.spring.boot.version>1.0.5</mybatisplus.spring.boot.version>
         <mysql.version>5.1.38</mysql.version>
-        <commons.lang.version>2.6</commons.lang.version>
-        <commons.fileupload.version>1.3.1</commons.fileupload.version>
-        <commons.io.version>2.5</commons.io.version>
-        <commons.codec.version>1.10</commons.codec.version>
+        <commons-lang3.version>3.3.2</commons-lang3.version>
+        <commons-io.version>2.5</commons-io.version>
+        <commons-codec.version>1.10</commons-codec.version>
+        <commons-fileupload.version>1.3.1</commons-fileupload.version>
+        <commons-beanutils.version>1.9.1</commons-beanutils.version>
         <fastjson.version>1.2.46</fastjson.version>
         <swagger.version>2.7.0</swagger.version>
         <dom4j.version>1.6.1</dom4j.version>
@@ -48,9 +54,11 @@
         <oss.version>2.5.0</oss.version>
         <shiro.version>1.4.0</shiro.version>
         <mybatis.version>3.4.6</mybatis.version>
+        <poi.version>3.9</poi.version>
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -61,6 +69,7 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${swagger.version}</version>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -99,14 +108,14 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>  
-		    <groupId>org.springframework.boot</groupId>  
-		    <artifactId>spring-boot-starter-cache</artifactId>  
-		</dependency>  
-		<dependency>  
-		    <groupId>com.github.ben-manes.caffeine</groupId>  
-		    <artifactId>caffeine</artifactId>  
-		</dependency>  
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
@@ -138,24 +147,35 @@
             <version>${fastjson.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>${commons.fileupload.version}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons.io.version}</version>
+            <version>${commons-io.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>${commons.codec.version}</version>
+            <version>${commons-codec.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commons.lang.version}</version>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>${commons-fileupload.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commons-beanutils.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>dom4j</groupId>
@@ -219,12 +239,37 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- poi office -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml-schemas</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
     </dependencies>
 
     <!-- 阿里云maven仓库 -->
     <repositories>
+        <!-- 公司仓库的地址 -->
         <repository>
-            <id>public</id>
+            <id>jk-dev</id>
+            <name>jk-dev nexus</name>
+            <url>http://182.61.23.57:8081/repository/maven-public/</url>
+            <!--<url>http://192.168.1.44:8081/repository/maven-public/</url>-->
+        </repository>
+
+        <repository>
+            <id>aliyun</id>
             <name>aliyun nexus</name>
             <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
             <releases>

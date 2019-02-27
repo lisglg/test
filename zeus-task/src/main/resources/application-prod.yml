@@ -3,9 +3,9 @@ spring:
         type: com.alibaba.druid.pool.DruidDataSource
         driverClassName: com.mysql.jdbc.Driver
         druid:
-            url: jdbc:mysql://182.61.23.57:3308/jd_tlb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
-            username: root
-            password: QjhsmF26m7wsCrIz
+            url: jdbc:mysql://172.16.2.7:3306/jd_pay?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+            username: newpay
+            password: t9uEp6izgPt%Yw4t#M3
             initial-size: 10
             max-active: 100
             min-idle: 10
@@ -31,3 +31,18 @@ spring:
                 wall:
                     config:
                         multi-statement-allow: true
+# 短信
+smsnational:
+    urlGL: http://smssh1.253.com/msg/send/json
+    accountGL: N0127464
+    passwordGL: FgYURl6sqC45bb
+    urlGW: http://intapi.253.com/send/json
+    accountGW: I1674626
+    passwordGW: Buwtzaq6nVe2ee
+    signEN: KEBE
+omni:
+    address: 1TqqdcezneBa9u1hNr9yAVFwPsS3vf5LR
+    rpc:
+        username : jkkj_user
+        password : jkkj_pass
+        uri: http://150.109.49.6:18666

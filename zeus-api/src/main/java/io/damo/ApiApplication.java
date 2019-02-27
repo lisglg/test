@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @ServletComponentScan
-@EnableTransactionManagement
+@EnableTransactionManagement(proxyTargetClass = true)
 @MapperScan(basePackages = {"io.damo.*.dao"})
 public class ApiApplication extends SpringBootServletInitializer {
 

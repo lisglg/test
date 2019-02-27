@@ -9,15 +9,16 @@ import io.damo.common.utils.AESUtil;
 import io.damo.common.utils.DateUtils;
 import io.damo.common.utils.RandomUtil;
 import io.damo.common.validator.Assert;
+import io.damo.sms.service.SmsCaptchaService;
 import io.damo.user.dao.UserBasicInfoDao;
 import io.damo.user.entity.TokenEntity;
-import io.damo.user.entity.UserAccountInfoEntity;
 import io.damo.user.entity.UserBasicInfoEntity;
 import io.damo.user.form.LoginForm;
 import io.damo.user.form.RegisterForm;
+import io.damo.user.form.UpdatePasswordForm;
 import io.damo.user.service.TokenService;
-import io.damo.user.service.UserAccountInfoService;
 import io.damo.user.service.UserBasicInfoService;
+import io.damo.user.service.UserWalletInfoService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Service("userBasicInfoService")
 @EnableTransactionManagement
@@ -43,10 +45,13 @@ public class UserBasicInfoServiceImpl extends ServiceImpl<UserBasicInfoDao, User
     private UserBasicInfoService userBasicInfoService;
 
     @Autowired
-    private UserAccountInfoService userAccountInfoService;
+    private TokenService tokenService;
 
     @Autowired
-    private TokenService tokenService;
+    private SmsCaptchaService smsCaptchaService;
+
+    @Autowired
+    private UserWalletInfoService userWalletInfoService;
 
     private static Logger logger = LoggerFactory.getLogger(UserBasicInfoServiceImpl.class);
 
@@ -58,45 +63,59 @@ public class UserBasicInfoServiceImpl extends ServiceImpl<UserBasicInfoDao, User
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public boolean saveUserMessage(RegisterForm form) {
+    public void saveUserMessage(RegisterForm form) {
         UserBasicInfoEntity userBasicInfoEntity = new UserBasicInfoEntity();
-        //id
         userBasicInfoEntity.setId(RandomUtil.generatorUserId());
-        //用户名称
+        Assert.assertCase(Pattern.matches(".*(客服|官方|管理员|售前|售后|service|offical|admin|Pre-sale|After-sale).*", form.getUsername()), "昵称存在敏感字符");
         userBasicInfoEntity.setNickName(form.getUsername());
-        //用户手机号
         userBasicInfoEntity.setPhone(form.getMobile());
-        //用户状态
+        userBasicInfoEntity.setCode(form.getPhoneCode().replace("+", ""));
         userBasicInfoEntity.setState(0);
-        //用户密码
         userBasicInfoEntity.setPassword(DigestUtils.sha256Hex(form.getPassword()));
-        //用户支付密码
-        userBasicInfoEntity.setPayPassword(DigestUtils.sha256Hex(form.getPayPassword()));
-        //推荐人
-        userBasicInfoEntity.setRecommenderPhone(form.getRecommend());
-        //间接推荐人
-        userBasicInfoEntity.setIndirectRecommend(getIndirectRecommend(form.getRecommend()));
-        //创建时间
-        userBasicInfoEntity.setCreateTime(DateUtils.now());
-        //地址
-        userBasicInfoEntity.setValletUrl(RandomUtil.getCharAndNumr(30));
+        userBasicInfoEntity.setRegisterTime(DateUtils.now());
         userBasicInfoEntity.setUpdateTime(DateUtils.now());
         userBasicInfoEntity.setCreateTime(DateUtils.now());
+        userBasicInfoEntity.setAccountKey(DigestUtils.sha256Hex(form.getMobile() + RandomUtil.ValletUrl()));
 
-        try {
-            //添加到用户信息
-            baseMapper.insert(userBasicInfoEntity);
-            //添加记录到用户账户表和用户明细表
-            saveAccountInfo(userBasicInfoEntity);
-            //推荐会员注册后记录到用户历史记录表
-            // TODO:?
-        } catch (Exception e) {
-            logger.info("saveUserMessage方法错误", e);
-            return false;
-        }
-        return true;
+        //添加到用户信息
+        baseMapper.insert(userBasicInfoEntity);
+        // 分配钱包地址
+        this.userWalletInfoService.setWalletAddress(userBasicInfoEntity.getId());
     }
 
+    /**
+     * 根据用户ID传用户信息
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public UserBasicInfoEntity selectByUserId(String userId) {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.where("id={0}", userId);
+        return userBasicInfoService.selectOne(entityWrapper);
+    }
+
+    @Override
+    public UserBasicInfoEntity selectByPhone(String phone) {
+        EntityWrapper<UserBasicInfoEntity> entityEntity = new EntityWrapper<>();
+        entityEntity.where("phone={0}", phone);
+        UserBasicInfoEntity userEntity = userBasicInfoService.selectOne(entityEntity);
+        return userEntity;
+    }
+
+
+    /**
+     * 登录
+     *
+     * @param mobile 手机号
+     * @return
+     */
+    public UserBasicInfoEntity queryByMobile(String mobile) {
+        UserBasicInfoEntity entity = new UserBasicInfoEntity();
+        entity.setPhone(mobile);
+        return baseMapper.selectOne(entity);
+    }
 
     /**
      * 登录验证
@@ -107,80 +126,80 @@ public class UserBasicInfoServiceImpl extends ServiceImpl<UserBasicInfoDao, User
     @Override
     public Map<String, Object> login(LoginForm form) {
         UserBasicInfoEntity user = queryByMobile(form.getMobile());
-        if(null==user){
-            logger.error("账号不存在！");
-        }
         Assert.isNull(user, MessageUtil.getMessage("account.does.not.exist"));
-        if (!Objects.isNull(user.getErrorNumber())&&user.getErrorNumber() == 5) {
-            throw new RRException(MessageUtil.getMessage("Error.Number"));
-        }
+        Assert.assertCase(Objects.nonNull(user.getErrorNumber()) && user.getErrorNumber() > 5, MessageUtil.getMessage("Error.Number"));
+
         //密码错误
         if (!user.getPassword().equals(DigestUtils.sha256Hex(form.getPassword()))) {
-            if(!Objects.isNull(user.getErrorNumber())){
+            if (!Objects.isNull(user.getErrorNumber())) {
                 user.setErrorNumber(user.getErrorNumber() + 1);
                 userBasicInfoService.updateById(user);
                 throw new RRException(MessageUtil.getMessage("phone.password.error"));
             }
         }
-        user.setAccountKey(DigestUtils.sha256Hex(form.getMobile()+RandomUtil.ValletUrl()));
+        user.setAccountKey(DigestUtils.sha256Hex(form.getMobile() + RandomUtil.ValletUrl()));
         user.setErrorNumber(0);
         userBasicInfoService.updateById(user);
-        logger.error("修改accountKey成功！");
-        //获取登录token
+
+        // 登录分配钱包地址
+        try {
+            this.userWalletInfoService.setWalletAddress(user.getId());
+        } catch (Exception e) {
+            logger.error("分配钱包地址异常:{}", e.getMessage());
+        }
+
+        // 获取登录token
         TokenEntity tokenEntity = tokenService.createToken(user.getId(), 1L);
-        logger.error("获取token成功！");
-        //token放到map保存
+
+        // token放到map保存
         Map<String, Object> map = new HashMap<>(4);
         map.put("token", tokenEntity.getToken());
         map.put("expire", tokenEntity.getExpireTime().getTime() - System.currentTimeMillis());
-        map.put("loginAccountKey",AESUtil.aesEncryptString(user.getAccountKey()));
-        map.put("phone",form.getMobile());
+        map.put("loginAccountKey", AESUtil.aesEncryptString(user.getAccountKey()));
+        map.put("phone", form.getMobile());
         return map;
     }
 
+    @Override
+    public void updatePassword(UpdatePasswordForm form) {
+        // 校验密码强度(8-20位数字和字母组合)
+        String regex = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,20}$";
+        Assert.assertCase(!form.getPassword().matches(regex), MessageUtil.getMessage("password.check.regex"));
 
-    /**
-     * 登录
-     *
-     * @param mobile 手机号
-     * @return
-     */
-    private UserBasicInfoEntity queryByMobile(String mobile) {
-        UserBasicInfoEntity entity = new UserBasicInfoEntity();
-        entity.setPhone(mobile);
-        return baseMapper.selectOne(entity);
-    }
+        // 获取用户信息
+        EntityWrapper<UserBasicInfoEntity> userWrapper = new EntityWrapper<>();
+        UserBasicInfoEntity userBasicInfoEntity = userBasicInfoService.selectOne(userWrapper.where("phone={0}", form.getMobile()));
+        Assert.isNull(Objects.isNull(userBasicInfoEntity), MessageUtil.getMessage("user.does.not.exist"));
 
-    /**
-     * 添加记录到用户账户表
-     *
-     * @param userEntity
-     */
-    private void saveAccountInfo(UserBasicInfoEntity userEntity) {
-        UserAccountInfoEntity infoEntity = new UserAccountInfoEntity();
-        infoEntity.setUserId(userEntity.getId());
-        infoEntity.setCreateTime(DateUtils.now());
-        //用户账户表
-        userAccountInfoService.insert(infoEntity);
-    }
+        // 错误次数超过10次，不能修改密码
+        Assert.assertCase(userBasicInfoEntity.getErrorNumber() > 10, MessageUtil.getMessage("update.Number"));
 
-    /**
-     * 获取推荐人的间接推荐人
-     *
-     * @param phone 推荐人电话
-     * @return 推荐人以及间接推荐人
-     */
-    private String getIndirectRecommend(String phone) {
-        EntityWrapper<UserBasicInfoEntity> entityEntity = new EntityWrapper<>();
-        entityEntity.where("phone={0}", phone);
-        UserBasicInfoEntity userEntity = userBasicInfoService.selectOne(entityEntity);
-        String indirectRecommendPhone;
-        //如果推荐人不存在  间接推荐人默认给0
-        if (null != userEntity) {
-            indirectRecommendPhone = phone + "," + userEntity.getIndirectRecommend();
-        } else {
-            indirectRecommendPhone = "0";
+        if (!smsCaptchaService.querySmsCaptchaIsPass(form.getMobile(), form.getCode())) {
+            // 短信校验失败，错误次数加1
+            UserBasicInfoEntity user = new UserBasicInfoEntity();
+            user.setId(userBasicInfoEntity.getId());
+            user.setErrorNumber(userBasicInfoEntity.getErrorNumber() + 1);
+            userBasicInfoService.updateById(user);
+            Assert.assertCase(true, MessageUtil.getMessage("Verification.code.error"));
         }
-        return indirectRecommendPhone;
+        //修改密码
+        this.updatePasswordDetail(userBasicInfoEntity, form.getPassword());
     }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updatePasswordDetail(UserBasicInfoEntity userBasicInfoEntity, String password) {
+        //修改密码
+        UserBasicInfoEntity updateUserInfo = new UserBasicInfoEntity();
+        updateUserInfo.setId(userBasicInfoEntity.getId());
+        updateUserInfo.setPassword(DigestUtils.sha256Hex(password));
+        updateUserInfo.setAccountKey(DigestUtils.sha256Hex(userBasicInfoEntity.getPhone() + RandomUtil.ValletUrl()));
+        updateUserInfo.setErrorNumber(0);
+        userBasicInfoService.updateById(updateUserInfo);
+        EntityWrapper<TokenEntity> tokenEntityWrapper = new EntityWrapper<>();
+
+        // 删除token
+        tokenEntityWrapper.where("user_id={0}", userBasicInfoEntity.getId());
+        tokenService.delete(tokenEntityWrapper);
+    }
+
 }

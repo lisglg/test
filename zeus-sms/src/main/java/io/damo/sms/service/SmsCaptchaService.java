@@ -47,18 +47,6 @@ public interface SmsCaptchaService extends IService<SmsCaptchaEntity> {
     boolean isAllowCaptcha(String mobile);
 
     /**
-     * 检查手机短信验证码是否有效(30分钟)
-     * @param mobile 手机号
-     * @param captcha 验证码
-     * @return boolean
-     */
-    boolean checkCaptcha(String mobile, String captcha);
-
-    boolean checkCaptcha(String areaCode, String mobile, String captcha);
-
-    SmsCaptchaEntity querySmsCaptcha(String mobile);
-
-    /**
      * 检查验证码是否校验通过
      * @param mobile  手机号码
      * @param code    验证码
@@ -66,13 +54,6 @@ public interface SmsCaptchaService extends IService<SmsCaptchaEntity> {
      */
     boolean querySmsCaptchaIsPass(String mobile,String code);
 
-    /**
-     * 检查手机短信验证码是否有效(30分钟)
-     * @param mobile 手机号
-     * @param captcha 验证码
-     * @return boolean
-     */
-    int checkSmsCode(String mobile, String captcha);
 
 }
 

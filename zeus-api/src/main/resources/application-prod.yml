@@ -3,9 +3,9 @@ spring:
         type: com.alibaba.druid.pool.DruidDataSource
         driverClassName: com.mysql.jdbc.Driver
         druid:
-            url: jdbc:mysql://182.61.23.57:3308/jd_tlb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
-            username: root
-            password: QjhsmF26m7wsCrIz
+            url: jdbc:mysql://172.16.2.7:3306/jd_pay?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+            username: newpay
+            password: t9uEp6izgPt%Yw4t#M3
             initial-size: 10
             max-active: 100
             min-idle: 10
@@ -41,3 +41,18 @@ smsnational:
    accountGW: I1674626
    passwordGW: Buwtzaq6nVe2ee
    signEN: KEBE
+
+qiniuyun:
+  ACCESS_KEY: 6ctFbKBnYX3aug1mLT37EzaMM9ruN83_iql2QJTk
+  SECRET_KEY: NCfqpam6v4aWLKO75rPK0XNmkymEL49EVjLDagpp
+  BUCKET: gkpay
+  callbackUrl: http://182.61.23.57:9090/damo-api/api/qiniuyunController/callback
+
+woPay:
+    merchantId: newpay
+    secretKey: zpaQA25XcK75nMN82kYcKg==
+    callBackUrl: http://api.newpay.mobi/damo-api/api/woPay/callBack
+
+#商城地址
+mall:
+    url: http://127.0.0.1:9050/new-mall-api

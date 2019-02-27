@@ -20,8 +20,10 @@ public class DateUtils {
      */
     public final static String DATE_PATTERN = "yyyy-MM-dd";
     public final static String DATE_FULL_PATTERN = "yyyyMMddHHmmss";
-    /** 日期时间格式：yyyyMMddHHmmssSSS */
-    public static final String  FULL_READ_INDENT_PATTERN       = "yyyyMMddHHmmssSSS";
+    /**
+     * 日期时间格式：yyyyMMddHHmmssSSS
+     */
+    public static final String FULL_READ_INDENT_PATTERN = "yyyyMMddHHmmssSSS";
     /**
      * 时间格式(yyyy-MM-dd HH:mm:ss)
      */
@@ -119,6 +121,7 @@ public class DateUtils {
 
     /**
      * 获取当前日期前一天日期
+     *
      * @param date
      * @return
      */
@@ -130,40 +133,104 @@ public class DateUtils {
         return date;
     }
 
+
     /**
-     * 获取确定剩余时间
+     * 获取当前月份
+     *
+     * @param date
+     * @return 当前月份
+     */
+    public static String getMonthDay(Date date) {
+        SimpleDateFormat formatter = new java.text.SimpleDateFormat("MM");
+        String month = formatter.format(date); //将日期时间格式化
+        SimpleDateFormat formatterDay = new java.text.SimpleDateFormat("dd");
+        String day = formatterDay.format(date); //将日期时间格式化
+        return month+"月"+day+"日";
+    }
+
+    /**
+     * 获取当前日期加一天
+     *
      * @param date
      * @return
      */
-    public static String timeLeft(Date date){
-        Long createDate = date.getTime();
-        Long nowDate = new Date().getTime();
-        if(nowDate-createDate>24*60*60*1000){
-            return "00:00";
-        }
-        Long hour = 23-(nowDate-createDate)/(1000*60*60);
-        Long minute = 59-(nowDate-createDate)%(1000*60*60)/(1000*60);
-        return (hour>9?hour:"0"+hour)+":"+(minute>9?minute:"0"+minute);
+    public static Date addDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        date = calendar.getTime();
+        return date;
     }
 
     /**
      * 获取确定剩余时间
+     *
      * @param date
      * @return
      */
-    public static String timeLeftOneHour(Date date){
-        if(date == null){
-            return "00:00";
+    public static String timeLeft(Date date) {
+        if (date == null) {
+            return "48时00分";
+        }
+
+        Long createDate = date.getTime();
+        Long nowDate = new Date().getTime();
+        if (nowDate - createDate > 48 * 60 * 60 * 1000) {
+            return "00时00分";
+        }
+        Long hour = 47 - (nowDate - createDate) / (1000 * 60 * 60);
+        Long minute = 59 - (nowDate - createDate) % (1000 * 60 * 60) / (1000 * 60);
+        return (hour > 9 ? hour : "0" + hour) + "时" + (minute > 9 ? minute : "0" + minute) + "分";
+    }
+
+    /**
+     * 获取确定剩余时间
+     *
+     * @param date
+     * @return
+     */
+    public static String time24Left(Date date) {
+        if (date == null) {
+            return "24时00分";
+        }
+
+        Long createDate = date.getTime();
+        Long nowDate = new Date().getTime();
+        if (nowDate - createDate > 24 * 60 * 60 * 1000) {
+            return "00时00分";
+        }
+        Long hour = 23 - (nowDate - createDate) / (1000 * 60 * 60);
+        Long minute = 59 - (nowDate - createDate) % (1000 * 60 * 60) / (1000 * 60);
+        return (hour > 9 ? hour : "0" + hour) + "时" + (minute > 9 ? minute : "0" + minute) + "分";
+    }
+
+    /**
+     * 获取确定剩余时间
+     *
+     * @param date
+     * @return
+     */
+    public static String timeLeftOneHour(Date date, Integer type) {
+        if (date == null) {
+            return "00时00分";
         }
         Long createDate = date.getTime();
         Long nowDate = new Date().getTime();
 
-        if(nowDate-createDate>60*60*1000){
-            return "00:00";
+        if (type == 0) {
+            if (nowDate - createDate > 60 * 60 * 1000) {
+                return "00时00分";
+            }
+            Long minute = 59 - (nowDate - createDate) % (1000 * 60 * 60) / (1000 * 60);
+            return "00时" + (minute > 9 ? minute : "0" + minute) + "分";
+        } else {
+            if (nowDate - createDate > 24 * 60 * 60 * 1000) {
+                return "00时00分";
+            }
+            Long hour = 23 - (nowDate - createDate) / (1000 * 60 * 60);
+            Long minute = 59 - (nowDate - createDate) % (1000 * 60 * 60) / (1000 * 60);
+            return (hour > 9 ? hour : "0" + hour) + "时" + (minute > 9 ? minute : "0" + minute) + "分";
         }
-
-        Long minute = 59-(nowDate-createDate)%(1000*60*60)/(1000*60);
-        return "00:"+(minute>9?minute:"0"+minute);
     }
 
     /**
@@ -416,14 +483,14 @@ public class DateUtils {
         return week == 6 || week == 0;
     }
 
-    public static DateBean getDataBean(Date dateStart,Date dateStop){
+    public static DateBean getDataBean(Date dateStart, Date dateStop) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date d1 = null;
         Date d2 = null;
-        DateBean dateBean=new DateBean();
+        DateBean dateBean = new DateBean();
         try {
             d1 = dateStart;
-            d2 =dateStop;
+            d2 = dateStop;
             //毫秒ms
             long diff = d2.getTime() - d1.getTime();
             long diffSeconds = diff / 1000 % 60;
@@ -440,13 +507,68 @@ public class DateUtils {
         return dateBean;
     }
 
-    public static void main(String[] srgs){
-        getNextDay(new Date());
-        format(getNextDay(new Date()),DATE_PATTERN);
-        System.out.println(format(getNextDay(new Date()),DATE_PATTERN));
+    public static void main(String[] srgs) {
+
+
     }
 
-    public static class DateBean{
+    /***
+     * 剩余收货时间
+     * @param payTime
+     * @return
+     */
+    public static String getOrderTime(Date payTime){
+        Calendar c=Calendar.getInstance();
+        c.setTime(payTime);
+        c.add(Calendar.DAY_OF_MONTH,7);
+        Calendar now=Calendar.getInstance();
+        long aTime=now.getTimeInMillis();
+        long bTime=c.getTimeInMillis();
+        //时间相减
+        long cTime=bTime-aTime;
+        long sTime=cTime/1000;//时间差，单位：秒
+        long mTime=sTime/60;
+        long hTime=mTime/60;
+        long dTime=hTime/24;
+        /*SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println("当前时间："+f.format(now.getTime()));
+        System.out.println("设定时间："+f.format(c.getTime()));
+        System.out.println("时间差："+dTime+"天"+hTime%24+"时"+mTime%60+"分"+sTime%60+"秒");*/
+        if(cTime>0){
+            return dTime+"天"+hTime%24+"小时";
+        }
+        return "";
+    }
+
+    /**
+     * 剩余应诉时间
+     * @param appealDate
+     * @return
+     */
+    public static String getAppealTime(Date appealDate) {
+        Calendar c=Calendar.getInstance();
+        c.setTime(appealDate);
+        c.add(Calendar.DAY_OF_MONTH,3);
+        Calendar now=Calendar.getInstance();
+        long aTime=now.getTimeInMillis();
+        long bTime=c.getTimeInMillis();
+        //时间相减
+        long cTime=bTime-aTime;
+        long sTime=cTime/1000;//时间差，单位：秒
+        long mTime=sTime/60;
+        long hTime=mTime/60;
+        long dTime=hTime/24;
+        /*SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println("当前时间："+f.format(now.getTime()));
+        System.out.println("设定时间："+f.format(c.getTime()));
+        System.out.println("时间差："+dTime+"天"+hTime%24+"时"+mTime%60+"分"+sTime%60+"秒");*/
+        if(cTime>0){
+            return dTime+"天"+hTime%24+"小时";
+        }
+        return "";
+    }
+
+    public static class DateBean {
         /*天*/
         private long diffDays;
         /*小时*/

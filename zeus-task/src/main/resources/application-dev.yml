@@ -3,7 +3,7 @@ spring:
         type: com.alibaba.druid.pool.DruidDataSource
         driverClassName: com.mysql.jdbc.Driver
         druid:
-            url: jdbc:mysql://182.61.23.57:3308/jd_tlb?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+            url: jdbc:mysql://182.61.23.57:3308/jd_pay?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&zeroDateTimeBehavior=convertToNull
             username: root
             password: QjhsmF26m7wsCrIz
             initial-size: 10
@@ -42,3 +42,10 @@ smsnational:
    accountGW: I1674626
    passwordGW: Buwtzaq6nVe2ee
    signEN: KEBE
+
+omni:
+    address: 1TqqdcezneBa9u1hNr9yAVFwPsS3vf5LR
+    rpc:
+        username : jkkj_user
+        password : jkkj_pass
+        uri: http://150.109.49.6:18666

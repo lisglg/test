@@ -6,33 +6,36 @@ import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 注册表单
- *
  */
 @ApiModel(value = "注册表单")
 public class RegisterForm {
+    @ApiModelProperty(value = "手机区号")
+    @NotBlank(message = "手机区号不能为空")
+    private String phoneCode;
+
     @ApiModelProperty(value = "手机号")
-    @NotBlank(message="手机号不能为空")
+    @NotBlank(message = "手机号不能为空")
     private String mobile;
 
     @ApiModelProperty(value = "用户名称")
-    @NotBlank(message="用户名称不能为空")
+    @NotBlank(message = "用户名称不能为空")
     private String username;
 
     @ApiModelProperty(value = "密码")
-    @NotBlank(message="密码不能为空")
+    @NotBlank(message = "密码不能为空")
     private String password;
 
-    @ApiModelProperty(value = "支付密码")
-    @NotBlank(message="支付密码不能为空")
-    private String payPassword;
-
-    @ApiModelProperty(value="推荐人")
-    @NotBlank(message = "推荐人不能为空")
-    private String recommend;
-
-    @ApiModelProperty(value="验证码")
+    @ApiModelProperty(value = "验证码")
     @NotBlank(message = "验证码不能为空")
     private String code;
+
+    public String getPhoneCode() {
+        return phoneCode;
+    }
+
+    public void setPhoneCode(String phoneCode) {
+        this.phoneCode = phoneCode;
+    }
 
     public String getMobile() {
         return mobile;
@@ -58,21 +61,6 @@ public class RegisterForm {
         this.password = password;
     }
 
-    public String getPayPassword() {
-        return payPassword;
-    }
-
-    public void setPayPassword(String payPassword) {
-        this.payPassword = payPassword;
-    }
-
-    public String getRecommend() {
-        return recommend;
-    }
-
-    public void setRecommend(String recommend) {
-        this.recommend = recommend;
-    }
 
     public String getCode() {
         return code;
@@ -87,7 +75,6 @@ public class RegisterForm {
         return "RegisterForm{" +
                 "mobile='" + mobile + '\'' +
                 ", username='" + username + '\'' +
-                ", recommend='" + recommend + '\'' +
                 ", code='" + code + '\'' +
                 '}';
     }

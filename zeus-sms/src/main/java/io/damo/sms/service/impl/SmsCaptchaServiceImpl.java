@@ -1,10 +1,13 @@
 package io.damo.sms.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.toolkit.StringUtils;
 import io.damo.common.exception.ServerException;
 import io.damo.common.utils.StringUtil;
+import io.damo.common.utils.U;
 import io.damo.sms.constant.SmsConstants;
 import io.damo.sms.request.SmsSendRequest;
 import io.damo.sms.response.SmsSendResponse;
@@ -41,7 +44,7 @@ public class SmsCaptchaServiceImpl extends ServiceImpl<SmsCaptchaDao, SmsCaptcha
      * @param type 短信类型
      */
     public void sendSmsCaptcha(String areaCode, String mobile, String type) {
-        Assert.assertMobile(mobile); //验证手机号格式
+        //Assert.assertMobile(mobile); //验证手机号格式
 
         // 1.检查是否连续发送短信验证码
         Assert.assertCase(!isAllowCaptcha(mobile), "一分钟内只允许发送一条短信");
@@ -90,28 +93,6 @@ public class SmsCaptchaServiceImpl extends ServiceImpl<SmsCaptchaDao, SmsCaptcha
     }
 
 
-    public void sendMessage(String areaCode, String mobile, String captcha, String msg){
-
-        //组装请求参数
-        String url = SmsConstant.urlGW;
-        String account = SmsConstant.accountGW;
-        String pswd = SmsConstant.passwordGW;
-        String signEN = SmsConstant.signEN;
-        if(StringUtil.isEmpty(areaCode) || "86".equals(areaCode) ){
-            url = SmsConstant.urlGL;
-            account = SmsConstant.accountGL;
-            pswd = SmsConstant.passwordGL;
-        }
-
-        SmsSendRequest smsSingleRequest = new SmsSendRequest(account, pswd, msg, mobile,"true");
-        String requestJson = JSON.toJSONString(smsSingleRequest);
-        String response = ChuangLanSmsUtil.sendSmsByPost(url, requestJson);
-        logger.info("response after request result is :" + response);
-        SmsSendResponse smsSingleResponse = JSON.parseObject(response, SmsSendResponse.class);
-        logger.info("response  toString is :" + smsSingleResponse);
-
-    }
-
     /**
      * 获取验证码消息
      * @param type 验证码类型：SmsConstants.Type.[VERIFICATION_REGISTER,VERIFICATION_FORGET]
@@ -138,6 +119,38 @@ public class SmsCaptchaServiceImpl extends ServiceImpl<SmsCaptchaDao, SmsCaptcha
         return replaceParam(template, captcha).toString();
     }
 
+    public void sendMessage(String areaCode, String mobile, String captcha, String msg){
+
+        //组装请求参数
+        String url = SmsConstant.urlGW;
+        String account = SmsConstant.accountGW;
+        String pswd = SmsConstant.passwordGW;
+        String signEN = SmsConstant.signEN;
+
+        if(StringUtil.isEmpty(areaCode) || "86".equals(areaCode) ){
+            url = SmsConstant.urlGL;
+            account = SmsConstant.accountGL;
+            pswd = SmsConstant.passwordGL;
+            SmsSendRequest  smsSingleRequest = new SmsSendRequest(account, pswd, msg, mobile,"true");
+            String requestJson = JSON.toJSONString(smsSingleRequest);
+            String response = ChuangLanSmsUtil.sendSmsByPost(url, requestJson);
+            logger.info("response after request result is :" + response);
+            SmsSendResponse smsSingleResponse = JSON.parseObject(response, SmsSendResponse.class);
+            logger.info("response  toString is :" + smsSingleResponse);
+        }else{
+            //组装请求参数
+            JSONObject map=new JSONObject();
+            map.put("account", account);
+            map.put("password", pswd);
+            map.put("msg", msg);
+            map.put("mobile", areaCode+mobile);
+            String response = ChuangLanSmsUtil.sendSmsByPost(url, map.toString());
+            logger.info("response after request result is :" + response);
+            SmsSendResponse smsSingleResponse = JSON.parseObject(response, SmsSendResponse.class);
+            logger.info("response  toString is :" + smsSingleResponse);
+        }
+    }
+
     /**
      * 替换消息模板参数
      *
@@ -161,47 +174,29 @@ public class SmsCaptchaServiceImpl extends ServiceImpl<SmsCaptchaDao, SmsCaptcha
 
 
     /**
-     * 检查手机短信验证码是否有效(30分钟)
-     * @param mobile 手机号
-     * @param captcha 验证码
-     * @return int
-     */
-    public int checkSmsCode(String mobile, String captcha) {
-        return this.smsCaptchaDao.getCntByCaptchaAndMobile(mobile, captcha);
-    }
-
-    /**
-     * 检查手机短信验证码是否有效(30分钟)
-     * @param mobile 手机号
-     * @param captcha 验证码
-     * @return boolean
-     */
-    public boolean checkCaptcha(String mobile, String captcha) {
-        return this.smsCaptchaDao.getCntByCaptchaAndMobile(mobile, captcha) > 0;
-    }
-
-    public boolean checkCaptcha(String areaCode,String mobile, String captcha) {
-        return this.smsCaptchaDao.getCntByCaptcha(areaCode, mobile, captcha) > 0;
-    }
-
-    @Override
-    public SmsCaptchaEntity querySmsCaptcha(String mobile) {
-        return this.smsCaptchaDao.querySmsCaptcha(mobile);
-    }
-
-    /**
-     * 校验手机号码是否通过
+     * 校验手机号码是否通过,如果验证错误则删除验证码，重新获取
      * @param mobile  手机号码
      * @param code    验证码   通过：true  失败：false
      * @return
      */
     @Override
     public boolean querySmsCaptchaIsPass(String mobile,String code) {
-        SmsCaptchaEntity smsCaptchaEntity = querySmsCaptcha(mobile);
-        if (StringUtils.checkValNull(smsCaptchaEntity)) {
+        // 查询用户手机验证码
+        EntityWrapper<SmsCaptchaEntity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.where("mobile = {0}", mobile);
+        SmsCaptchaEntity smsCaptchaEntity = this.selectOne(entityWrapper);
+
+        if(smsCaptchaEntity == null){
             return false;
+        }else{
+            int count = this.smsCaptchaDao.getCntByCaptchaAndMobile(mobile, code);
+            if(count == 0){
+                this.deleteById(smsCaptchaEntity);
+                return false;
+            }else{
+                return true;
+            }
         }
-        return smsCaptchaEntity.getCode().equals(code);
     }
 
 }

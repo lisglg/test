@@ -1,6 +1,5 @@
 package io.damo.user.interceptor;
 
-
 import io.damo.common.annotation.Login;
 import io.damo.common.exception.RRException;
 import io.damo.common.message.MessageUtil;

@@ -7,7 +7,6 @@
     <resultMap type="io.damo.user.entity.AppPromotionRecordEntity" id="appPromotionRecordMap">
         <result property="id" column="id"/>
         <result property="forceUpdate" column="force_update"/>
-        <result property="name" column="name"/>
         <result property="version" column="version"/>
         <result property="type" column="type"/>
         <result property="url" column="url"/>

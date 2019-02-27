@@ -50,8 +50,8 @@ public class PicUtil {
 
         Files.copy(file.getInputStream(), Paths.get(ROOT, fileName));
         //图片url
-        StringBuffer sb = new StringBuffer("http://").append(Constant.serverIp).append(":")
-                .append(Constant.serverPort).append(Constant.contextPath).append("/image/").append(fileName);
+
+        StringBuffer sb = new StringBuffer("https://web.newpay.mobi").append(Constant.contextPath).append("/image/").append(fileName);
         return sb;
     }
 

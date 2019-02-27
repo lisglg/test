@@ -49,6 +49,6 @@ public class SmsConstants {
         public static final String VERIFICATION_TRADE_GESTURE = "您正在进行设置交易手势操作，验证码%@%。妥善保管，请勿转发";
 
         /** 短信模板：通用 */
-        public static final String VERIFICATION_COMMON = "验证码%@%。妥善保管，请勿转发";
+        public static final String VERIFICATION_COMMON = "【NewEco】验证码%@%。妥善保管，请勿转发!短信有效时间60秒！";
     }
 }

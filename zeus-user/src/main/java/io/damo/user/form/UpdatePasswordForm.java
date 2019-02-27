@@ -4,6 +4,11 @@ import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotBlank;
 
 public class UpdatePasswordForm {
+
+    @ApiModelProperty(value = "手机区号")
+    @NotBlank(message="手机区号不能为空")
+    private String phoneCode;
+
     @ApiModelProperty(value = "手机号")
     @NotBlank(message="手机号不能为空")
     private String mobile;
@@ -15,6 +20,14 @@ public class UpdatePasswordForm {
     @ApiModelProperty(value = "验证码")
     @NotBlank(message="验证码")
     private String code;
+
+    public String getPhoneCode() {
+        return phoneCode;
+    }
+
+    public void setPhoneCode(String phoneCode) {
+        this.phoneCode = phoneCode;
+    }
 
     public String getMobile() {
         return mobile;

@@ -1,7 +1,7 @@
 package io.damo.web.user;
 
-
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.toolkit.CollectionUtils;
 import io.damo.common.aspect.OpLogger;
 import io.damo.common.response.CommonResponse;
 import io.damo.user.entity.AppPromotionRecordEntity;
@@ -10,13 +10,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 /**
  * app版本升级配置表

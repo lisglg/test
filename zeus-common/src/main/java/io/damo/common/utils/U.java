@@ -30,6 +30,14 @@ public final class U {
 
     private static final String LIKE = "%";
     private static final String PHONE = "^1[0-9]{10}$";
+
+    public static final String BTC_PIC_URL= "http://paypenueb.bkt.clouddn.com/wallet/cover/BTC.png";
+    public static final String CRT_PIC_URL= "http://paypenueb.bkt.clouddn.com/wallet/cover/CRT.png";
+    public static final String ETH_PIC_URL= "http://paypenueb.bkt.clouddn.com/wallet/cover/ETH.png";
+    public static final String NEWT_PIC_URL= "http://paypenueb.bkt.clouddn.com/wallet/cover/NEWT.png";
+    public static final String USDT_PIC_URL= "http://paypenueb.bkt.clouddn.com/wallet/cover/USDT.png";
+    public static final String NP_PIC_URL= "http://paypenueb.bkt.clouddn.com/np.png";
+
     /**
      * _abc-def@123-hij.uvw_xyz.com 是正确的, -123@xyz.com 不是
      */
@@ -596,5 +604,24 @@ public final class U {
             System.out.println(getStringRandom(5));
         }
 
+    }
+
+    /**
+     * 校验昵称
+     * @param name
+     * @return
+     */
+    public static boolean checkNickName(String name) {
+        String regex = "^[\\u4E00-\\u9FA5A-Za-z0-9_]{2,14}$";
+        return name.matches(regex);
+    }
+
+    /**
+     * 手机号加星星
+     * @param phone
+     * @return
+     */
+    public static String getSecretPhone(String phone) {
+        return phone.substring(0, 3) + "****" + phone.substring(7, phone.length());
     }
 }

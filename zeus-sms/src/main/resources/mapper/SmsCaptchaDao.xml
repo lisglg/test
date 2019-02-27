@@ -15,7 +15,7 @@
     </resultMap>
 
     <select id="getCntByCaptchaAndMobile" resultType="int" parameterType="string">
-        SELECT count(1) as cnt from tb_sms_captcha where mobile = #{mobile} and code = #{code} and status = '0' and lastTime > (CURRENT_TIMESTAMP - INTERVAL 2 MINUTE)
+        SELECT count(1) as cnt from tb_sms_captcha where mobile = #{mobile} and code = #{code} and status = '0' and lastTime > (CURRENT_TIMESTAMP - INTERVAL 3 MINUTE)
     </select>
 
     <insert id="addSmsCaptcha" parameterType="io.damo.sms.entity.SmsCaptchaEntity">
@@ -44,7 +44,7 @@
     </select>
 
     <select id="getCntByCaptcha" resultType="int" parameterType="string">
-        SELECT count(1) as cnt from tb_sms_captcha where area_code = #{areaCode} and mobile = #{mobile} and code = #{code} and status = '0' and lastTime > (CURRENT_TIMESTAMP - INTERVAL 5 MINUTE)
+        SELECT count(1) as cnt from tb_sms_captcha where area_code = #{areaCode} and mobile = #{mobile} and code = #{code} and status = '0' and lastTime > (CURRENT_TIMESTAMP - INTERVAL 3 MINUTE)
     </select>
 
     <select id="querySmsCaptcha" resultType="io.damo.sms.entity.SmsCaptchaEntity">

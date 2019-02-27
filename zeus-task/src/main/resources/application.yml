@@ -71,3 +71,4 @@ mybatis-plus:
 #logging
 logging:
   level.root: info
+  path: logs/newPay-task/spring

@@ -46,6 +46,11 @@ public class RegexUtil {
         return Pattern.matches(regex, decimals);
     }
 
+    public static boolean checkInteger(String decimals) {
+        String regex = "^\\+?[1-9][0-9]*$";
+        return Pattern.matches(regex, decimals);
+    }
+
     public static boolean checkBlankSpace(String blankSpace) {
         String regex = "\\s+";
         return Pattern.matches(regex, blankSpace);

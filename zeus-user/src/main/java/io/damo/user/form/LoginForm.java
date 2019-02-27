@@ -11,6 +11,11 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @ApiModel(value = "登录表单")
 public class LoginForm {
+
+    @ApiModelProperty(value = "手机区号")
+    @NotBlank(message="手机区号不能为空")
+    private String phoneCode;
+
     @ApiModelProperty(value = "手机号")
     @NotBlank(message="手机号不能为空")
     private String mobile;
@@ -19,6 +24,13 @@ public class LoginForm {
     @NotBlank(message="密码不能为空")
     private String password;
 
+    public String getPhoneCode() {
+        return phoneCode;
+    }
+
+    public void setPhoneCode(String phoneCode) {
+        this.phoneCode = phoneCode;
+    }
 
     public String getMobile() {
         return mobile;

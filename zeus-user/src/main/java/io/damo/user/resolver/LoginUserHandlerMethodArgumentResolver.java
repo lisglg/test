@@ -1,15 +1,17 @@
 package io.damo.user.resolver;
 
+
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import io.damo.common.annotation.Login;
 import io.damo.common.annotation.LoginUser;
 import io.damo.common.exception.RRException;
+import io.damo.user.entity.SysUserEntity;
 import io.damo.user.entity.TokenEntity;
 import io.damo.user.entity.UserBasicInfoEntity;
 import io.damo.user.interceptor.AuthorizationInterceptor;
+import io.damo.user.service.SysUserService;
 import io.damo.user.service.TokenService;
 import io.damo.user.service.UserBasicInfoService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +31,8 @@ public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgu
     @Autowired
     private UserBasicInfoService userService;
 
-    //@Autowired
-    //private SysUserService sysUserService;
+    @Autowired
+    private SysUserService sysUserService;
 
     @Autowired
     private TokenService tokenService;
@@ -38,13 +40,14 @@ public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgu
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return (parameter.getParameterType().isAssignableFrom(UserBasicInfoEntity.class)  /*|| parameter.getParameterType().isAssignableFrom(SysUserEntity.class)*/)
+        return (parameter.getParameterType().isAssignableFrom(UserBasicInfoEntity.class) || parameter.getParameterType().isAssignableFrom(SysUserEntity.class))
                 && parameter.hasParameterAnnotation(LoginUser.class);
     }
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer container,
                                   NativeWebRequest request, WebDataBinderFactory factory) {
+        Login annotation;
         //获取用户ID
         Object object = request.getAttribute(AuthorizationInterceptor.USER_KEY, RequestAttributes.SCOPE_REQUEST);
         if (object == null) {
@@ -69,12 +72,9 @@ public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgu
             }else{
                 return userBasicInfoEntity;
             }
+        } else if (parameter.getParameterType().isAssignableFrom(SysUserEntity.class)) {
+            //return sysUserService.getSysUserById(object.toString());
         }
-        /*
-        else if (parameter.getParameterType().isAssignableFrom(SysUserEntity.class)) {
-            return sysUserService.getSysUserById(object.toString());
-        }
-        */
         return null;
     }
 }

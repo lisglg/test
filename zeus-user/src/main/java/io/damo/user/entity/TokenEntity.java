@@ -11,7 +11,7 @@ import java.util.Date;
  * 用户Token
  * 
  * @author ives
- * @date 2018-06-07 11:38:28
+ * @date 2019-02-20 16:03:31
  */
 @TableName("tb_token")
 public class TokenEntity implements Serializable {
@@ -20,7 +20,7 @@ public class TokenEntity implements Serializable {
 	/**
 	 * 
 	 */
-	@TableId(type = IdType.INPUT)
+	@TableId(type= IdType.INPUT)
 	private String userId;
 	/**
 	 * token
